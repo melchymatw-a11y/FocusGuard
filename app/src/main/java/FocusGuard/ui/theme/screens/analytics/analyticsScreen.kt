@@ -1,2 +1,17 @@
 package FocusGuard.ui.theme.screens.analytics
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+
+@Composable
+fun AnalyticsScreen(navController: NavController){
+
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun AnalyticsScreenPreview(){
+    AnalyticsScreen(rememberNavController())
+}
+

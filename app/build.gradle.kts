@@ -51,9 +51,12 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.firebase.ml.vision)
     implementation("io.coil-kt:coil-compose:2.0.0")
+
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
+    implementation(libs.androidx.navigation.runtime.ktx)
     testImplementation(libs.junit)
+    implementation("androidx.navigation:navigation-compose:2.8.4")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
