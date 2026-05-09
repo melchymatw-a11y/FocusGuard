@@ -16,7 +16,7 @@ import FocusGuard.ui.theme.screens.goals.ViewGoalsScreen
 import FocusGuard.ui.theme.screens.goals.UpdateGoalScreen
 import FocusGuard.ui.theme.screens.tracking.TrackingScreen
 import FocusGuard.ui.theme.screens.analytics.AnalyticsScreen
-import FocusGuard.ui.theme.screens.partner.PartnerScreen
+import com.example.focusguard.ui.theme.screens.partner.PartnerScreen
 
 
 @Composable
@@ -26,24 +26,30 @@ fun AppNavHost(
 ) {
     NavHost(navController, startDestination = startDestination) {
 
+
         composable(ROUTE_SPLASH) { SplashScreen(navController) }
         composable(ROUTE_LOGIN) { LoginScreen(navController) }
         composable(ROUTE_REGISTER) { RegisterScreen(navController) }
         composable(ROUTE_DASHBOARD) { DashboardScreen(navController) }
+        composable(ROUTE_PARTNER) { PartnerScreen(navController = navController) }
+        composable(ROUTE_ANALYTICS) { AnalyticsScreen(navController) }
         composable(ROUTE_ADD_GOAL) { AddGoalScreen(navController) }
         composable(ROUTE_VIEW_GOALS) { ViewGoalsScreen(navController) }
-        composable(ROUTE_TRACKING) { TrackingScreen(navController) }
-        composable(ROUTE_ANALYTICS) { AnalyticsScreen(navController) }
-        composable(ROUTE_PARTNER) { PartnerScreen(navController) }
-
-        // REMOVED the simple ROUTE_UPDATE_GOAL line that was here
 
         composable(
-            ROUTE_UPDATE_GOAL,
+            route = "update_goal/{goalId}",
             arguments = listOf(navArgument("goalId") { type = NavType.StringType })
         ) { backStackEntry ->
-            val goalId = backStackEntry.arguments?.getString("goalId")!!
+            val goalId = backStackEntry.arguments?.getString("goalId") ?: ""
             UpdateGoalScreen(navController, goalId)
+        }
+
+        composable(
+            route = "tracking/{goalName}",
+            arguments = listOf(navArgument("goalName") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val goalName = backStackEntry.arguments?.getString("goalName") ?: "Focus Session"
+            TrackingScreen(navController, goalName)
         }
     }
 }
