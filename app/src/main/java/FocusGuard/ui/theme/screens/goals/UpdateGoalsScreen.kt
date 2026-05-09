@@ -1,5 +1,6 @@
 package FocusGuard.ui.theme.screens.goals
 
+import androidx.compose.foundation.Image // Use Image for custom graphics
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -10,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource // Required to load drawable
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -19,6 +21,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import FocusGuard.data.GoalsViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.example.focusguard.R // Ensure this matches your package name
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,9 +35,9 @@ fun UpdateGoalScreen(navController: NavController, goalId: String) {
     val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
     // Brand Color Palette
-    val deepPurpleBg = Color(0xFF6B21A8) // #6B21A8
-    val primaryPurpleBtn = Color(0xFF7C3AED) // #7C3AED
-    val accentCyan = Color(0xFF06B6D4) // #06B6D4
+    val deepPurpleBg = Color(0xFF6B21A8)
+    val primaryPurpleBtn = Color(0xFF7C3AED)
+    val accentCyan = Color(0xFF06B6D4)
 
     LaunchedEffect(Unit) {
         goalsViewModel.fetchSingleGoal(userId, goalId) { goal ->
@@ -46,7 +49,7 @@ fun UpdateGoalScreen(navController: NavController, goalId: String) {
     }
 
     Scaffold(
-        containerColor = deepPurpleBg, // Background set to Deep Purple
+        containerColor = deepPurpleBg,
         topBar = {
             TopAppBar(
                 title = { Text("EDIT GOAL", fontWeight = FontWeight.Bold, fontSize = 18.sp) },
@@ -56,8 +59,8 @@ fun UpdateGoalScreen(navController: NavController, goalId: String) {
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White, // White TopBar background
-                    titleContentColor = deepPurpleBg // Purple text
+                    containerColor = Color.White,
+                    titleContentColor = deepPurpleBg
                 )
             )
         }
@@ -69,6 +72,18 @@ fun UpdateGoalScreen(navController: NavController, goalId: String) {
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            // --- CUSTOM IMAGE LOGO START ---
+            // Ensure you have a file named 'shield_logo' in res/drawable
+            Image(
+                painter = painterResource(id = R.drawable.shield),
+                contentDescription = "FocusGuard Logo",
+                modifier = Modifier.size(80.dp)
+            )
+            // --- CUSTOM IMAGE LOGO END ---
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Text(
                 text = "Adjust Your Goal",
                 fontSize = 22.sp,
@@ -78,7 +93,6 @@ fun UpdateGoalScreen(navController: NavController, goalId: String) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // White Card for inputs
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
@@ -98,7 +112,7 @@ fun UpdateGoalScreen(navController: NavController, goalId: String) {
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = accentCyan,
                             focusedLabelColor = accentCyan,
-                            unfocusedBorderColor = Color.Black
+                            unfocusedBorderColor = Color.LightGray
                         )
                     )
 
@@ -113,21 +127,20 @@ fun UpdateGoalScreen(navController: NavController, goalId: String) {
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = accentCyan,
                             focusedLabelColor = accentCyan,
-                            unfocusedBorderColor = Color.Black
+                            unfocusedBorderColor = Color.LightGray
                         )
                     )
 
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    // Primary Purple Button
                     Button(
                         onClick = {
                             goalsViewModel.updateGoal(goalId, title, duration, userId, navController, context)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp),
-                        shape = RoundedCornerShape(12.dp),
+                            .height(55.dp),
+                        shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = primaryPurpleBtn)
                     ) {
                         Text("SAVE CHANGES", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
@@ -136,10 +149,4 @@ fun UpdateGoalScreen(navController: NavController, goalId: String) {
             }
         }
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun UpdateGoalScreenPreview() {
-    UpdateGoalScreen(navController = rememberNavController(), goalId = "fake_goal_123")
 }

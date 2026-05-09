@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,11 +36,11 @@ fun DashboardScreen(navController: NavController) {
     var userData by remember { mutableStateOf<UserModel?>(null) }
 
     // Brand Color Palette
-    val deepPurpleBg = Color(0xFF6B21A8)  // Exact hex requested
-    val indigoText = Color(0xFF3730A3)    // Professional Indigo
-    val blueHero = Color(0xFF2563EB)      // Blue for gradient
-    val cyanHero = Color(0xFF06B6D4)      // Cyan for gradient
-    val lightPurpleCard = Color(0xFF7E22CE) // Slightly lighter for Partner card
+    val deepPurpleBg = Color(0xFF6B21A8)
+    val indigoText = Color(0xFF3730A3)
+    val blueHero = Color(0xFF2563EB)
+    val cyanHero = Color(0xFF06B6D4)
+    val lightPurpleCard = Color(0xFF7E22CE)
 
     LaunchedEffect(Unit) {
         currentUser?.uid?.let { uid ->
@@ -51,15 +52,25 @@ fun DashboardScreen(navController: NavController) {
     Scaffold(
         containerColor = deepPurpleBg,
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("FOCUS GUARD", fontWeight = FontWeight.Black, fontSize = 18.sp) },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.White,
-                    titleContentColor = deepPurpleBg
+            // REMOVED THE WHITE: Now using a transparent top bar with White text
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "FocusGuard",
+                        fontWeight = FontWeight.ExtraBold,
+                        fontStyle = FontStyle.Italic, // FANCY ITALICS
+                        fontSize = 22.sp,
+                        letterSpacing = 1.sp
+
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent, // Blends with deepPurpleBg
+                    titleContentColor = Color.White
                 ),
                 actions = {
                     IconButton(onClick = { authViewModel.logout(navController, context) }) {
-                        Icon(Icons.Default.ExitToApp, contentDescription = "Logout", tint = deepPurpleBg)
+                        Icon(Icons.Default.ExitToApp, contentDescription = "Logout", tint = Color.White)
                     }
                 }
             )
@@ -67,8 +78,8 @@ fun DashboardScreen(navController: NavController) {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navController.navigate(ROUTE_ADD_GOAL) },
-                containerColor = deepPurpleBg,
-                contentColor = Color.White
+                containerColor = Color.White, // White button to pop against purple
+                contentColor = deepPurpleBg
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add Goal")
             }
@@ -84,7 +95,7 @@ fun DashboardScreen(navController: NavController) {
 
             // Header: Welcome Section
             item {
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "Welcome, ${userData?.name ?: "User"}",
                     fontSize = 26.sp,
@@ -101,13 +112,13 @@ fun DashboardScreen(navController: NavController) {
                 )
             }
 
-            // Hero Card: System Analysis (Blue to Cyan Gradient)
+            // Hero Card: System Analysis
             item {
                 Card(
                     onClick = { navController.navigate(ROUTE_ANALYTICS) },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    elevation = CardDefaults.cardElevation(6.dp)
+                    shape = RoundedCornerShape(24.dp),
+                    elevation = CardDefaults.cardElevation(0.dp)
                 ) {
                     Box(
                         modifier = Modifier
@@ -116,7 +127,7 @@ fun DashboardScreen(navController: NavController) {
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text("SYSTEM ANALYSIS", color = Color.White.copy(0.8f), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Text("SYSTEM ANALYSIS", color = Color.White.copy(0.7f), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                                 Text("View Reports", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text("Track labor hours & productivity", color = Color.White.copy(0.9f), fontSize = 13.sp)
@@ -125,14 +136,14 @@ fun DashboardScreen(navController: NavController) {
                                 imageVector = Icons.Default.Info,
                                 contentDescription = null,
                                 tint = Color.White,
-                                modifier = Modifier.size(44.dp)
+                                modifier = Modifier.size(40.dp)
                             )
                         }
                     }
                 }
             }
 
-            // Accountability Partners Card (Lighter Purple)
+            // Accountability Partners Card
             item {
                 Card(
                     onClick = { navController.navigate(ROUTE_PARTNER) },
@@ -144,28 +155,28 @@ fun DashboardScreen(navController: NavController) {
                         modifier = Modifier.padding(20.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.Person, contentDescription = null, tint = Color.White, modifier = Modifier.size(32.dp))
+                        Icon(Icons.Default.Person, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
                         Spacer(modifier = Modifier.width(16.dp))
                         Column {
                             Text("Accountability Partners", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                            Text("Share progress with your team", color = Color.White.copy(alpha = 0.7f), fontSize = 12.sp)
+                            Text("Share progress with your friend", color = Color.White.copy(alpha = 0.7f), fontSize = 12.sp)
                         }
                     }
                 }
             }
 
-            // Quick Stats Row (White Cards)
+            // Quick Stats Row
             item {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Surface(
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(16.dp),
-                        color = Color.White,
+                        color = Color.White.copy(alpha = 0.15f), // Glass-morphism effect (semi-transparent white)
                         onClick = { navController.navigate(ROUTE_VIEW_GOALS) }
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Active Goals", color = Color.Gray, fontSize = 12.sp)
-                            Text("${goalsViewModel.allGoals.size}", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                            Text("Active Goals", color = Color.White.copy(0.7f), fontSize = 12.sp)
+                            Text("${goalsViewModel.allGoals.size}", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.White)
                         }
                     }
                     Surface(
@@ -175,7 +186,7 @@ fun DashboardScreen(navController: NavController) {
                         onClick = { navController.navigate(ROUTE_ADD_GOAL) }
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Quick Action", color = Color.Gray, fontSize = 12.sp)
+                            Text("Quick Action", color = deepPurpleBg.copy(0.6f), fontSize = 12.sp)
                             Text("Add New", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = deepPurpleBg)
                         }
                     }
@@ -186,7 +197,7 @@ fun DashboardScreen(navController: NavController) {
                 Text("Recent Activity", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color.White)
             }
 
-            // Activity Items (White Cards with Indigo Text)
+            // Activity Items
             items(goalsViewModel.allGoals.take(3)) { goal ->
                 val rawDuration = goal.durationHours.toDoubleOrNull() ?: 0.0
                 val formattedDuration = if (rawDuration % 1.0 == 0.0) rawDuration.toInt().toString() else "%.1f".format(rawDuration)
@@ -194,7 +205,7 @@ fun DashboardScreen(navController: NavController) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(16.dp)
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
@@ -206,13 +217,16 @@ fun DashboardScreen(navController: NavController) {
                             Text(goal.title, fontWeight = FontWeight.Bold, color = Color.Black)
                             Text("$formattedDuration Hours Allocated", fontSize = 12.sp, color = indigoText)
                         }
-                        IconButton(onClick = { navController.navigate("tracking/${goal.title}") }) {
+                        IconButton(
+                            onClick = { navController.navigate("tracking/${goal.title}") },
+                            colors = IconButtonDefaults.iconButtonColors(containerColor = deepPurpleBg.copy(alpha = 0.1f))
+                        ) {
                             Icon(Icons.Default.PlayArrow, contentDescription = null, tint = deepPurpleBg)
                         }
                     }
                 }
             }
-            item { Spacer(modifier = Modifier.height(20.dp)) }
+            item { Spacer(modifier = Modifier.height(24.dp)) }
         }
     }
 }
