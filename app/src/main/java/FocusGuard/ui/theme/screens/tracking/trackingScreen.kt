@@ -1,7 +1,6 @@
 package FocusGuard.ui.theme.screens.tracking
 
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -16,28 +15,30 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import FocusGuard.data.GoalsViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackingScreen(navController: NavController, goalName: String?) {
     val context = LocalContext.current
+    val goalsViewModel: GoalsViewModel = viewModel() // Access the ViewModel
 
     var isTracking by remember { mutableStateOf(false) }
     var secondsElapsed by remember { mutableStateOf(0) }
 
     // Consistent Color Palette
-    val deepPurpleBg = Color(0xFF6B21A8) // #6B21A8
-    val primaryPurpleBtn = Color(0xFF7C3AED) // #7C3AED
-    val accentCyan = Color(0xFF06B6D4) // #06B6D4
-    val deleteRed = Color(0xFFEF4444) // #EF4444
+    val deepPurpleBg = Color(0xFF6B21A8)
+    val primaryPurpleBtn = Color(0xFF7C3AED)
+    val accentCyan = Color(0xFF06B6D4)
+    val deleteRed = Color(0xFFEF4444)
 
     LaunchedEffect(isTracking) {
         if (isTracking) {
-            while (true) {
+            while (isTracking) {
                 delay(1000)
                 secondsElapsed++
             }
@@ -49,13 +50,13 @@ fun TrackingScreen(navController: NavController, goalName: String?) {
     val timeDisplay = "%02d:%02d".format(minutes, seconds)
 
     Scaffold(
-        containerColor = deepPurpleBg, // Applied Deep Purple Background
+        containerColor = deepPurpleBg,
         topBar = {
             TopAppBar(
                 title = { Text("FOCUS SESSION", fontWeight = FontWeight.Bold, fontSize = 18.sp) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White, // White TopBar
-                    titleContentColor = deepPurpleBg // Purple Text
+                    containerColor = Color.White,
+                    titleContentColor = deepPurpleBg
                 )
             )
         }
@@ -78,16 +79,15 @@ fun TrackingScreen(navController: NavController, goalName: String?) {
                 text = goalName ?: "Active Goal",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = Color.White // Text on purple is white
+                color = Color.White
             )
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // The Ticking Timer Card
             Surface(
                 modifier = Modifier.size(280.dp),
-                shape = RoundedCornerShape(140.dp), // Circular Surface
-                color = Color.White, // White background for the card/circle
+                shape = RoundedCornerShape(140.dp),
+                color = Color.White,
                 shadowElevation = 8.dp
             ) {
                 Box(contentAlignment = Alignment.Center) {
@@ -95,20 +95,19 @@ fun TrackingScreen(navController: NavController, goalName: String?) {
                         progress = (secondsElapsed % 60) / 60f,
                         modifier = Modifier.size(240.dp),
                         strokeWidth = 10.dp,
-                        color = if (isTracking) accentCyan else Color.LightGray // Cyan ring when active
+                        color = if (isTracking) accentCyan else Color.LightGray
                     )
                     Text(
                         text = timeDisplay,
                         fontSize = 54.sp,
                         fontWeight = FontWeight.Black,
-                        color = Color.Black // Dark text inside white card
+                        color = Color.Black
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(60.dp))
 
-            // Control Button
             Button(
                 onClick = {
                     if (!isTracking) {
@@ -116,24 +115,26 @@ fun TrackingScreen(navController: NavController, goalName: String?) {
                     } else {
                         isTracking = false
                         val userId = FirebaseAuth.getInstance().currentUser?.uid
-                        val database = FirebaseDatabase.getInstance().reference
 
-                        val sessionData = mapOf(
-                            "goalname" to goalName,
-                            "timedisplay" to timeDisplay,
-                            "secondselapsed" to secondsElapsed,
-                            "timestamp" to System.currentTimeMillis()
-                        )
-                        database.child("sessions")
-                            .child(userId!!)
-                            .push()
-                            .setValue(sessionData)
-                        Toast.makeText(context, "Session Saved: $timeDisplay", Toast.LENGTH_SHORT).show()
-                        navController.navigateUp()
+                        if (userId != null) {
+
+                            val hoursWorked = secondsElapsed.toDouble() / 3600.0
+
+
+                            goalsViewModel.recordWorkSession(
+                                userId = userId,
+                                goalId = goalName ?: "Unknown",
+                                hoursWorked = hoursWorked,
+                                context = context
+                            )
+
+                            Toast.makeText(context, "Progress Saved: ${"%.2f".format(hoursWorked)} hours", Toast.LENGTH_SHORT).show()
+                            navController.navigateUp()
+                        }
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isTracking) deleteRed else primaryPurpleBtn // Red to stop, Purple to start
+                    containerColor = if (isTracking) deleteRed else primaryPurpleBtn
                 ),
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier

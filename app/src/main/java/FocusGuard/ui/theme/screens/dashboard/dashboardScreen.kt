@@ -1,5 +1,4 @@
 package FocusGuard.ui.theme.screens.dashboard
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -52,20 +51,20 @@ fun DashboardScreen(navController: NavController) {
     Scaffold(
         containerColor = deepPurpleBg,
         topBar = {
-            // REMOVED THE WHITE: Now using a transparent top bar with White text
+
             TopAppBar(
                 title = {
                     Text(
                         text = "FocusGuard",
                         fontWeight = FontWeight.ExtraBold,
-                        fontStyle = FontStyle.Italic, // FANCY ITALICS
+                        fontStyle = FontStyle.Italic,
                         fontSize = 22.sp,
                         letterSpacing = 1.sp
 
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent, // Blends with deepPurpleBg
+                    containerColor = Color.Transparent,
                     titleContentColor = Color.White
                 ),
                 actions = {
@@ -93,7 +92,6 @@ fun DashboardScreen(navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            // Header: Welcome Section
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -112,7 +110,7 @@ fun DashboardScreen(navController: NavController) {
                 )
             }
 
-            // Hero Card: System Analysis
+
             item {
                 Card(
                     onClick = { navController.navigate(ROUTE_ANALYTICS) },
@@ -143,7 +141,7 @@ fun DashboardScreen(navController: NavController) {
                 }
             }
 
-            // Accountability Partners Card
+
             item {
                 Card(
                     onClick = { navController.navigate(ROUTE_PARTNER) },
@@ -165,13 +163,13 @@ fun DashboardScreen(navController: NavController) {
                 }
             }
 
-            // Quick Stats Row
+
             item {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Surface(
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(16.dp),
-                        color = Color.White.copy(alpha = 0.15f), // Glass-morphism effect (semi-transparent white)
+                        color = Color.White.copy(alpha = 0.15f),
                         onClick = { navController.navigate(ROUTE_VIEW_GOALS) }
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {

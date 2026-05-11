@@ -74,7 +74,7 @@ class GoalsViewModel : ViewModel() {
         }
     }
 
-    // 4. UPDATE GOAL (UPDATE) - *** ADDED THIS ***
+    // 4. UPDATE GOAL (UPDATE)
     fun updateGoal(
         goalId: String,
         title: String,
@@ -99,12 +99,38 @@ class GoalsViewModel : ViewModel() {
         }
     }
 
-    // 5. DELETE GOAL (DELETE) - *** BONUS FOR EXTRA MARKS ***
+    // 5. DELETE GOAL (DELETE)
     fun deleteGoal(goalId: String, userId: String, context: Context) {
         val dbRef = FirebaseDatabase.getInstance().getReference("goals/$userId/$goalId")
         dbRef.removeValue().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 Toast.makeText(context, "Goal deleted", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // --- LOGIC FOR SYSTEM ANALYSIS (WORK SESSIONS) ---
+
+    // 6. RECORD WORK SESSION (Saves the time tracked by the timer)
+    fun recordWorkSession(
+        userId: String,
+        goalId: String,
+        hoursWorked: Double,
+        context: Context
+    ) {
+        val dbRef = FirebaseDatabase.getInstance().getReference("sessions/$userId")
+        val sessionId = dbRef.push().key ?: ""
+
+        val sessionData = mapOf(
+            "sessionId" to sessionId,
+            "goalId" to goalId,
+            "hours" to hoursWorked,
+            "timestamp" to System.currentTimeMillis()
+        )
+
+        dbRef.child(sessionId).setValue(sessionData).addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Toast.makeText(context, "Failed to save progress", Toast.LENGTH_SHORT).show()
             }
         }
     }
